@@ -1,1 +1,0 @@
-# mathmind-smart-fuel-lab
