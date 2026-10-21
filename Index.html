@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathMind India | Smart Fuel Research Lab</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07111f;--card:#101e32;--line:#29425d;--cyan:#67e8f9;--text:#eef6ff;--muted:#b4c4d8}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+header{padding:28px 15px;text-align:center;background:linear-gradient(135deg,#12345a,#075e65);border-bottom:2px solid var(--cyan)}
+header h1{font-size:clamp(25px,5vw,38px);color:var(--cyan)}
+header p{color:#e0f2fe;margin-top:5px}
+nav{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:13px;background:#0c192b;position:sticky;top:0;z-index:10}
+nav a{color:var(--cyan);text-decoration:none;border:1px solid var(--line);padding:7px 10px;border-radius:8px;font-size:13px}
+nav a:hover{background:#164e63}
+.container{max-width:1150px;width:94%;margin:22px auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:20px;box-shadow:0 5px 18px #0002;scroll-margin-top:80px}
+h2{font-size:22px;color:var(--cyan);margin-bottom:12px}
+h3{color:#a5f3fc;margin:12px 0 5px}
+p{margin:7px 0;color:#d4e0ee}
+.note{font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.stat{padding:17px;background:#091627;border:1px solid var(--line);border-radius:11px}
+.stat span{display:block;color:var(--muted);font-size:13px}
+.stat strong{display:block;font-size:25px;color:var(--cyan);overflow-wrap:anywhere}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+label{display:block;margin:10px 0 5px;color:#dbeafe;font-size:14px}
+input,select,button{font:inherit;width:100%;padding:11px;border-radius:8px;border:1px solid #405774}
+input,select{background:#081525;color:white}
+button{background:#0891b2;color:white;border:0;font-weight:bold;cursor:pointer;margin-top:10px}
+button:hover{background:#0e7490}
+button.secondary{background:#334155}
+button.danger{background:#a83232}
+button.small{width:auto;padding:6px 9px;margin:2px;font-size:12px}
+.result{background:#082a32;border:1px solid #0e7490;padding:13px;border-radius:9px;margin-top:12px;overflow-wrap:anywhere}
+.table-wrap{overflow-x:auto;margin-top:14px}
+table{width:100%;min-width:740px;border-collapse:collapse}
+th,td{padding:10px;text-align:left;border-bottom:1px solid var(--line);font-size:13px}
+th{color:var(--cyan);background:#091627}
+td{color:#e2e8f0}
+canvas{width:100%;height:280px;display:block;background:#081525;border-radius:10px;margin-top:12px}
+ul,ol{padding-left:22px;color:#d4e0ee}
+li{margin:6px 0}
+.formula{background:#091627;border-left:3px solid var(--cyan);padding:10px;margin:9px 0;border-radius:5px;overflow-wrap:anywhere}
+footer{text-align:center;padding:25px;color:var(--muted);border-top:1px solid var(--line)}
+.hidden{display:none}
+@media(max-width:500px){.card{padding:14px}nav a{font-size:12px;padding:6px 8px}h2{font-size:20px}}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>⚡ MathMind India</h1>
+  <p>Smart Fuel Research Lab</p>
+  <p>Mathematics Exhibition 2026–27</p>
+  <p>Created by Kartik | Class 9</p>
+</header>
+
+<nav>
+  <a href="#dashboard">Dashboard</a>
+  <a href="#data">Fuel Data</a>
+  <a href="#compare">Compare</a>
+  <a href="#trip">Trip Calculator</a>
+  <a href="#whatif">What-If Lab</a>
+  <a href="#e20">E20 Lab</a>
+  <a href="#math">Math Model</a>
+  <a href="#viva">Viva</a>
+</nav>
+
+<main class="container">
+
+<section class="card">
+  <h2>🔬 About This Project</h2>
+  <p>This project uses Mathematics, data analysis and computational thinking to study fuel prices in different cities.</p>
+  <p>Users can enter researched data, compare prices, calculate travel expenses and test hypothetical price changes.</p>
+  <p class="note">Important: This website does not fetch live prices. Enter verified prices with their source and date. Demo data is for practice only. Results depend on the data entered.</p>
+</section>
+
+<section class="card" id="dashboard">
+  <h2>📊 Research Dashboard</h2>
+  <div class="grid">
+    <div class="stat"><span>Cities Recorded</span><strong id="cityCount">0</strong></div>
+    <div class="stat"><span>Average Petrol Price</span><strong id="avgPetrol">₹0.00</strong></div>
+    <div class="stat"><span>Highest Petrol Price</span><strong id="highPetrol">₹0.00</strong></div>
+    <div class="stat"><span>Lowest Petrol Price</span><strong id="lowPetrol">₹0.00</strong></div>
+  </div>
+</section>
+
+<section class="card" id="data">
+  <h2>📝 Add or Update Fuel Data</h2>
+  <p>Enter data collected from a reliable source. You can add multiple cities.</p>
+
+  <form id="fuelForm">
+    <input type="hidden" id="editId">
+    <div class="form-grid">
+      <div><label for="city">City / Region</label><input id="city" required placeholder="e.g. New Delhi"></div>
+      <div><label for="region">State / Territory</label><input id="region" required placeholder="e.g. Delhi"></div>
+      <div><label for="petrol">Petrol Price (₹/L)</label><input id="petrol" type="number" min="0.01" step="0.01" required placeholder="e.g. 94.77"></div>
+      <div><label for="diesel">Diesel Price (₹/L)</label><input id="diesel" type="number" min="0.01" step="0.01" required placeholder="e.g. 87.67"></div>
+      <div><label for="date">Research Date</label><input id="date" type="date" required></div>
+      <div><label for="source">Source of Data</label><input id="source" required placeholder="Official source / report"></div>
+    </div>
+    <button type="submit" id="saveBtn">➕ Save City Data</button>
+    <button type="button" class="secondary" onclick="loadDemo()">Load Demo Data</button>
+    <button type="button" class="secondary" onclick="resetForm()">Clear Form</button>
+  </form>
+  <div id="formMessage" class="result hidden"></div>
+  <p class="note">Your data is saved in this browser on this device. It is not automatically shared online or with your teacher.</p>
+</section>
+
+<section class="card" id="compare">
+  <h2>🌍 City Comparison</h2>
+  <label for="chartMode">Select data to compare</label>
+  <select id="chartMode" onchange="drawChart()">
+    <option value="petrol">Petrol Prices</option>
+    <option value="diesel">Diesel Prices</option>
+    <option value="gap">Petrol-Diesel Price Difference</option>
+  </select>
+  <canvas id="fuelChart" width="1000" height="300"></canvas>
+  <p class="note">The chart displays only the data currently stored in this browser.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>City</th><th>Region</th><th>Petrol ₹/L</th>
+        <th>Diesel ₹/L</th><th>Price Gap ₹</th><th>Date</th><th>Actions</th>
+      </tr></thead>
+      <tbody id="cityTable"></tbody>
+    </table>
+  </div>
+  <button onclick="exportCSV()">📁 Export Data as CSV</button>
+  <label for="csvFile">Import CSV File</label>
+  <input id="csvFile" type="file" accept=".csv,text/csv">
+  <p class="note">CSV columns: City, Region, Petrol, Diesel, Date, Source. Export a sample file first to see the format.</p>
+</section>
+
+<section class="card" id="trip">
+  <h2>🚗 Trip Cost Calculator</h2>
+  <p>Estimate fuel expenses for a journey using the vehicle's mileage and selected fuel price.</p>
+  <div class="form-grid">
+    <div><label for="tripDistance">Distance (km, one way)</label><input id="tripDistance" type="number" min="0.1" step="0.1" value="100"></div>
+    <div><label for="tripMileage">Vehicle Mileage (km/L)</label><input id="tripMileage" type="number" min="0.1" step="0.1" value="15"></div>
+    <div><label for="tripPrice">Fuel Price (₹/L)</label><input id="tripPrice" type="number" min="0.01" step="0.01" value="95"></div>
+    <div><label for="tripType">Journey Type</label><select id="tripType"><option value="1">One way</option><option value="2">Return journey</option></select></div>
+  </div>
+  <button onclick="calculateTrip()">Calculate Trip Cost</button>
+  <div id="tripResult" class="result">Enter your journey details to calculate the estimated cost.</div>
+</section>
+
+<section class="card" id="whatif">
+  <h2>🧪 What-If Price Simulator</h2>
+  <p>Explore how a hypothetical price increase or decrease changes the cost of fuel.</p>
+  <div class="form-grid">
+    <div><label for="basePrice">Current Price (₹/L)</label><input id="basePrice" type="number" min="0.01" step="0.01" value="95"></div>
+    <div><label for="changePercent">Price Change (%)</label><input id="changePercent" type="number" step="0.1" value="10"></div>
+    <div><label for="litres">Fuel Quantity (litres)</label><input id="litres" type="number" min="0.1" step="0.1" value="20"></div>
+  </div>
+  <button onclick="calculateWhatIf()">Run Simulation</button>
+  <div id="whatIfResult" class="result">A positive percentage means an increase; a negative percentage means a decrease.</div>
+</section>
+
+<section class="card" id="e20">
+  <h2>🌱 E20 Blend Calculator</h2>
+  <p>E20 fuel is a blend containing 20% ethanol and 80% petrol by volume.</p>
+  <div class="form-grid">
+    <div><label for="e20Litres">Total Blend Volume (litres)</label><input id="e20Litres" type="number" min="0.1" step="0.1" value="10"></div>
+  </div>
+  <button onclick="calculateE20()">Calculate Blend Composition</button>
+  <div id="e20Result" class="result">Enter a volume to calculate the theoretical blend composition.</div>
+  <p class="note">This is a mathematical composition calculator, not a fuel-mixing instruction. Use only fuel approved by the vehicle manufacturer. Vehicle compatibility and mileage can vary.</p>
+</section>
+
+<section class="card" id="math">
+  <h2>🧮 Mathematical Model</h2>
+  <h3>1. Average Petrol Price</h3>
+  <div class="formula">Average = Sum of recorded petrol prices ÷ Number of cities</div>
+  <h3>2. Petrol-Diesel Price Gap</h3>
+  <div class="formula">Price Gap = Petrol Price − Diesel Price</div>
+  <h3>3. Estimated Fuel Required</h3>
+  <div class="formula">Fuel Required (litres) = Distance (km) ÷ Mileage (km/L)</div>
+  <h3>4. Estimated Trip Cost</h3>
+  <div class="formula">Trip Cost = Fuel Required × Fuel Price per litre</div>
+  <h3>5. Percentage Price Change</h3>
+  <div class="formula">New Price = Original Price × (1 + Percentage Change ÷ 100)</div>
+  <h3>6. E20 Composition</h3>
+  <div class="formula">Ethanol Volume = Total Volume × 20 ÷ 100</div>
+  <div class="formula">Petrol Volume = Total Volume × 80 ÷ 100</div>
+  <h3>Computational Thinking Used</h3>
+  <ul>
+    <li><b>Data collection:</b> Record city prices, date and source.</li>
+    <li><b>Decomposition:</b> Divide the problem into data, comparison and calculation.</li>
+    <li><b>Pattern recognition:</b> Find higher and lower recorded prices.</li>
+    <li><b>Abstraction:</b> Focus on relevant data instead of unrelated details.</li>
+    <li><b>Algorithm:</b> Apply the same formulas to every entry.</li>
+    <li><b>Validation:</b> Check that values are valid and sources are recorded.</li>
+  </ul>
+  <p class="note">The model estimates costs. Actual mileage, traffic, driving conditions and fuel prices may differ.</p>
+</section>
+
+<section class="card" id="viva">
+  <h2>🎓 Viva Questions and Answers</h2>
+  <h3>Q1. What is the purpose of this project?</h3>
+  <p>To use mathematical models and computational thinking to compare fuel-price data and estimate travel expenses.</p>
+  <h3>Q2. Why is data collection important?</h3>
+  <p>Accurate data makes the comparison more meaningful. Each entry should include a date and a reliable source.</p>
+  <h3>Q3. What is an average?</h3>
+  <p>The sum of all values divided by the number of values.</p>
+  <h3>Q4. What is computational thinking?</h3>
+  <p>A problem-solving approach that uses decomposition, pattern recognition, abstraction and algorithms.</p>
+  <h3>Q5. What is E20?</h3>
+  <p>E20 is a fuel blend containing 20% ethanol and 80% petrol by volume.</p>
+  <h3>Q6. Does this website show live fuel prices?</h3>
+  <p>No. It analyses the data entered by the user. The website does not connect to a live price service.</p>
+  <h3>Q7. How is the trip cost calculated?</h3>
+  <p>Distance is divided by mileage to estimate fuel required, then multiplied by the price per litre.</p>
+  <h3>Q8. What makes this project useful?</h3>
+  <p>Users can analyse their own researched data, compare cities, estimate journey costs and test hypothetical price changes instead of viewing only static information.</p>
+</section>
+
+</main>
+
+<footer>
+  <p>MathMind India | Smart Fuel Research Lab</p>
+  <p>Mathematics Exhibition 2026–27 | Kartik | Class 9</p>
+  <p class="note">Educational project. Results depend on the data entered. No live prices are provided.</p>
+</footer>
+
+<script>
+"use strict";
+
+const STORAGE_KEY = "mathmind_smart_fuel_lab_v1";
+let records = [];
+let nextId = 1;
+
+function safeNumber(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : NaN;
+}
+
+function money(value) {
+  return "₹" + Number(value).toFixed(2);
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, function(ch) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[ch];
+  });
+}
+
+function loadStoredData() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    if (Array.isArray(saved)) {
+      records = saved.filter(r =>
+        r && typeof r.city === "string" &&
+        Number.isFinite(Number(r.petrol)) &&
+        Number.isFinite(Number(r.diesel))
+      ).map(r => ({
+        id: Number(r.id) || nextId++,
+        city: String(r.city),
+        region: String(r.region || ""),
+        petrol: Number(r.petrol),
+        diesel: Number(r.diesel),
+        date: String(r.date || ""),
+        source: String(r.source || "")
+      }));
+    }
+    nextId = records.reduce((max, r) => Math.max(max, r.id + 1), 1);
+  } catch (error) {
+    records = [];
+  }
+}
+
+function saveStoredData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    return true;
+  } catch (error) {
+    alert("Data could not be saved in this browser. Check browser storage settings.");
+    return false;
+  }
+}
+
+function showMessage(message) {
+  const box = document.getElementById("formMessage");
+  box.textContent = message;
+  box.classList.remove("hidden");
+}
+
+function resetForm() {
+  document.getElementById("fuelForm").reset();
+  document.getElementById("editId").value = "";
+  document.getElementById("saveBtn").textContent = "➕ Save City Data";
+  document.getElementById("date").value = new Date().toISOString().slice(0, 10);
+}
+
+document.getElementById("fuelForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const city = document.getElementById("city").value.trim();
+  const region = document.getElementById("region").value.trim();
+  const petrol = safeNumber(document.getElementById("petrol").value);
+  const diesel = safeNumber(document.getElementById("diesel").value);
+  const date = document.getElementById("date").value;
+  const source = document.getElementById("source").value.trim();
+  const editId = Number(document.getElementById("editId").value);
+
+  if (!city || !region || !date || !source ||
+      !Number.isFinite(petrol) || petrol <= 0 ||
+      !Number.isFinite(diesel) || diesel <= 0) {
+    showMessage("Please enter valid data in all fields.");
+    return;
+  }
+
+  if (editId) {
+    const index = records.findIndex(r => r.id === editId);
+    if (index !== -1) {
+      records[index] = { id: editId, city, region, petrol, diesel, date, source };
+      showMessage("City data updated successfully.");
+    }
+  } else {
+    records.push({ id: nextId++, city, region, petrol, diesel, date, source });
+    showMessage("City data saved successfully.");
+  }
+
+  saveStoredData();
+  resetForm();
+  renderAll();
+});
+
+function editRecord(id) {
+  const r = records.find(item => item.id === id);
+  if (!r) return;
+
+  document.getElementById("editId").value = r.id;
+  document.getElementById("city").value = r.city;
+  document.getElementById("region").value = r.region;
+  document.getElementById("petrol").value = r.petrol;
+  document.getElementById("diesel").value = r.diesel;
+  document.getElementById("date").value = r.date;
+  document.getElementById("source").value = r.source;
+  document.getElementById("saveBtn").textContent = "Save Updated Data";
+  document.getElementById("data").scrollIntoView({ behavior: "smooth" });
+}
+
+function deleteRecord(id) {
+  const r = records.find(item => item.id === id);
+  if (!r) return;
+  if (!confirm("Delete data for " + r.city + "?")) return;
+
+  records = records.filter(item => item.id !== id);
+  saveStoredData();
+  renderAll();
+}
+
+function renderDashboard() {
+  document.getElementById("cityCount").textContent = records.length;
+
+  if (!records.length) {
+    document.getElementById("avgPetrol").textContent = "—";
+    document.getElementById("highPetrol").textContent = "—";
+    document.getElementById("lowPetrol").textContent = "—";
+    return;
+  }
+
+  const prices = records.map(r => r.petrol);
+  const avg = prices.reduce((sum, n) => sum + n, 0) / prices.length;
+
+  document.getElementById("avgPetrol").textContent = money(avg);
+  document.getElementById("highPetrol").textContent = money(Math.max(...prices));
+  document.getElementById("lowPetrol").textContent = money(Math.min(...prices));
+}
+
+function renderTable() {
+  const tbody = document.getElementById("cityTable");
+
+  if (!records.length) {
+    tbody.innerHTML = '<tr><td colspan="7">No city data yet. Add your researched data or load demo data.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = records.map(r => `
+    <tr>
+      <td>${escapeHTML(r.city)}</td>
+      <td>${escapeHTML(r.region)}</td>
+      <td>${money(r.petrol)}</td>
+      <td>${money(r.diesel)}</td>
+      <td>${money(r.petrol - r.diesel)}</td>
+      <td title="${escapeHTML(r.source)}">${escapeHTML(r.date)}</td>
+      <td>
+        <button class="small" onclick="editRecord(${r.id})">Edit</button>
+        <button class="small danger" onclick="deleteRecord(${r.id})">Delete</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function drawChart() {
+  const canvas = document.getElementById("fuelChart");
+  const ctx = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "#081525";
+  ctx.fillRect(0, 0, width, height);
+
+  if (!records.length) {
+    ctx.fillStyle = "#b4c4d8";
+    ctx.font = "18px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Add data to display the chart", width / 2, height / 2);
+    return;
+  }
+
+  const mode = document.getElementById("chartMode").value;
+  const values = records.map(r => mode === "petrol" ? r.petrol :
+    mode === "diesel" ? r.diesel : Math.abs(r.petrol - r.diesel));
+
+  const maxVal = Math.max(...values, 1);
+  const left = 55, right = 20, top = 25, bottom = 65;
+  const plotW = width - left - right;
+  const plotH = height - top - bottom;
+
+  ctx.strokeStyle = "#29425d";
+  ctx.fillStyle = "#b4c4d8";
+  ctx.font = "12px Arial";
+  ctx.textAlign = "right";
+
+  for (let i = 0; i <= 4; i++) {
+    const y = top + plotH - (plotH * i / 4);
+    ctx.beginPath();
+    ctx.moveTo(left, y);
+    ctx.lineTo(width - right, y);
+    ctx.stroke();
+    ctx.fillText((maxVal * i / 4).toFixed(1), left - 7, y + 4);
+  }
+
+  const slot = plotW / records.length;
+  const barW = Math.min(60, slot * 0.6);
+
+  records.forEach((r, i) => {
+    const value = values[i];
+    const barH = plotH * value / maxVal;
+    const x = left + slot * i + (slot - barW) / 2;
+    const y = top + plotH - barH;
+
+    ctx.fillStyle = "#0891b2";
+    ctx.fillRect(x, y, barW, barH);
+
+    ctx.fillStyle = "#e0f2fe";
+    ctx.textAlign = "center";
+    ctx.font = "12px Arial";
+    ctx.fillText(value.toFixed(1), x + barW / 2, Math.max(top + 12, y - 5));
+
+    ctx.save();
+    ctx.translate(x + barW / 2, height - bottom + 12);
+    ctx.rotate(-0.45);
+    ctx.textAlign = "right";
+    ctx.fillText(r.city.slice(0, 18), 0, 0);
+    ctx.restore();
+  });
+}
+
+function renderAll() {
+  renderDashboard();
+    renderTable();
+  drawChart();
+}
+
+function loadDemo() {
+  if (records.length && !confirm("Load demo data alongside existing records? Existing data will be kept.")) return;
+
+  const demo = [
+    { city: "New Delhi", region: "Delhi", petrol: 94.77, diesel: 87.67 },
+    { city: "Mumbai", region: "Maharashtra", petrol: 103.50, diesel: 90.03 },
+    { city: "Chennai", region: "Tamil Nadu", petrol: 100.80, diesel: 92.39 },
+    { city: "Kolkata", region: "West Bengal", petrol: 105.41, diesel: 92.02 },
+    { city: "Leh", region: "Ladakh", petrol: 102.00, diesel: 88.00 },
+    { city: "Itanagar", region: "Arunachal Pradesh", petrol: 95.00, diesel: 85.00 }
+  ];
+
+  const demoDate = new Date().toISOString().slice(0, 10);
+
+  demo.forEach(d => {
+    const exists = records.some(r =>
+      r.city.toLowerCase() === d.city.toLowerCase() &&
+      r.source === "Illustrative demo data"
+    );
+
+    if (!exists) {
+      records.push({
+        id: nextId++,
+        ...d,
+        date: demoDate,
+        source: "Illustrative demo data"
+      });
+    }
+  });
+
+  saveStoredData();
+  renderAll();
+  showMessage("Demo data loaded. These are illustrative values, not verified current fuel prices.");
+}
+
+function calculateTrip() {
+  const distance = Number(document.getElementById("tripDistance").value);
+  const mileage = Number(document.getElementById("tripMileage").value);
+  const price = Number(document.getElementById("tripPrice").value);
+  const multiplier = Number(document.getElementById("tripType").value);
+  const out = document.getElementById("tripResult");
+
+  if (!(distance > 0 && mileage > 0 && price > 0)) {
+    out.textContent = "Please enter valid positive values.";
+    return;
+  }
+
+  const totalDistance = distance * multiplier;
+  const fuel = totalDistance / mileage;
+  const cost = fuel * price;
+
+  out.innerHTML =
+    "<b>Total distance:</b> " + totalDistance.toFixed(2) + " km<br>" +
+    "<b>Fuel required:</b> " + fuel.toFixed(2) + " litres<br>" +
+    "<b>Estimated trip cost:</b> ₹" + cost.toFixed(2);
+}
+
+function calculateWhatIf() {
+  const price = Number(document.getElementById("basePrice").value);
+  const change = Number(document.getElementById("changePercent").value);
+  const litres = Number(document.getElementById("litres").value);
+  const out = document.getElementById("whatIfResult");
+
+  if (!(price > 0 && litres > 0 && Number.isFinite(change)) ||
+      1 + change / 100 < 0) {
+    out.textContent = "Enter a valid price, quantity and percentage.";
+    return;
+  }
+
+  const newPrice = price * (1 + change / 100);
+  const oldCost = price * litres;
+  const newCost = newPrice * litres;
+  const difference = newCost - oldCost;
+
+  out.innerHTML =
+    "<b>Original price:</b> ₹" + price.toFixed(2) + "/L<br>" +
+    "<b>New hypothetical price:</b> ₹" + newPrice.toFixed(2) + "/L<br>" +
+    "<b>Original total:</b> ₹" + oldCost.toFixed(2) + "<br>" +
+    "<b>New total:</b> ₹" + newCost.toFixed(2) + "<br>" +
+    "<b>Difference:</b> ₹" + Math.abs(difference).toFixed(2) +
+    (difference > 0 ? " more" : difference < 0 ? " less" : " (no change)");
+}
+
+function calculateE20() {
+  const total = Number(document.getElementById("e20Litres").value);
+  const out = document.getElementById("e20Result");
+
+  if (!(total > 0)) {
+    out.textContent = "Please enter a valid positive volume.";
+    return;
+  }
+
+  out.innerHTML =
+    "<b>Total blend volume:</b> " + total.toFixed(2) + " litres<br>" +
+    "<b>20% ethanol component:</b> " + (total * 0.2).toFixed(2) + " litres<br>" +
+    "<b>80% petrol component:</b> " + (total * 0.8).toFixed(2) + " litres<br>" +
+    "<span class='note'>Mathematical calculation only. Use only fuel approved by the vehicle manufacturer.</span>";
+}
+
+function csvCell(value) {
+  return '"' + String(value).replace(/"/g, '""') + '"';
+}
+
+function exportCSV() {
+  const headers = ["City", "Region", "Petrol", "Diesel", "Date", "Source"];
+  const rows = records.map(r => [
+    r.city, r.region, r.petrol, r.diesel, r.date, r.source
+  ]);
+
+  const csv = [headers, ...rows]
+    .map(row => row.map(csvCell).join(","))
+    .join("\r\n");
+
+  const blob = new Blob(["\uFEFF" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "mathmind-fuel-data.csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let value = "";
+  let quoted = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+
+    if (ch === '"' && quoted && line[i + 1] === '"') {
+      value += '"';
+      i++;
+    } else if (ch === '"') {
+      quoted = !quoted;
+    } else if (ch === "," && !quoted) {
+      result.push(value);
+      value = "";
+    } else {
+      value += ch;
+    }
+  }
+
+  result.push(value);
+  return result;
+}
+
+document.getElementById("csvFile").addEventListener("change", async function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    const textData = (await file.text()).replace(/^\uFEFF/, "");
+    const lines = textData.split(/\r?\n/).filter(line => line.trim());
+
+    if (lines.length < 2) {
+      throw new Error("CSV file contains no data rows.");
+    }
+
+    const headers = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase());
+    const index = name => headers.indexOf(name);
+
+    const cityI = index("city");
+    const regionI = index("region");
+    const petrolI = index("petrol");
+    const dieselI = index("diesel");
+    const dateI = index("date");
+    const sourceI = index("source");
+
+    if ([cityI, regionI, petrolI, dieselI, dateI, sourceI].some(i => i < 0)) {
+      throw new Error("Required columns: City, Region, Petrol, Diesel, Date, Source.");
+    }
+
+    let added = 0;
+
+    for (let i = 1; i < lines.length; i++) {
+      const cells = parseCSVLine(lines[i]);
+      const city = (cells[cityI] || "").trim();
+      const region = (cells[regionI] || "").trim();
+      const petrol = Number(cells[petrolI]);
+      const diesel = Number(cells[dieselI]);
+      const date = (cells[dateI] || "").trim();
+      const source = (cells[sourceI] || "").trim();
+
+      if (!city || !region || !date || !source ||
+          !(petrol > 0) || !(diesel > 0) ||
+          !Number.isFinite(petrol) || !Number.isFinite(diesel)) {
+        continue;
+      }
+
+      records.push({
+        id: nextId++,
+        city, region, petrol, diesel, date, source
+      });
+
+      added++;
+    }
+
+    saveStoredData();
+    renderAll();
+    showMessage(added + " valid row(s) imported.");
+  } catch (error) {
+    alert("CSV import failed: " + error.message);
+  } finally {
+    event.target.value = "";
+  }
+});
+
+loadStoredData();
+resetForm();
+renderAll();
+
+</script>
+</body>
+</html>
